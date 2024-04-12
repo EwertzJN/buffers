@@ -101,14 +101,15 @@ class RingBufferDataset(EpisodeDataset):
             linear_sequence_indices = start_indices.unsqueeze(1) + torch.arange(
                 selected_boundaries[:, 1] - selected_boundaries[:, 0])
         else:
+            sequence_length = torch.min(torch.cat([selected_boundaries[:, 1] - selected_boundaries[:, 0], torch.tensor([self.sequence_length])])).item()
             # Compute maximum offset that can be used for each sequence.
             max_offsets = torch.remainder(
-                selected_boundaries[:, 1] - selected_boundaries[:, 0], self.capacity) - self.sequence_length
+                selected_boundaries[:, 1] - selected_boundaries[:, 0], self.capacity) - sequence_length
             offsets = (max_offsets * torch.rand(self.chunk_size)).long()
 
             # Sample start indices for each sequence.
             start_indices = selected_boundaries[:, 0] + offsets
-            linear_sequence_indices = start_indices.unsqueeze(1) + torch.arange(self.sequence_length)
+            linear_sequence_indices = start_indices.unsqueeze(1) + torch.arange(sequence_length)
 
         # Adjust indices to account for circular buffer.
         sequence_indices = torch.remainder(linear_sequence_indices, self.capacity)
