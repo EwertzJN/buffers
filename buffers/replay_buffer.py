@@ -44,6 +44,11 @@ class ReplayBuffer:
                 self.dataset.add_episode(self.current_episodes[batch_index])
                 self.current_episodes[batch_index] = defaultdict(list)
 
+    def add_episode(self, episode: Dict[str, list]) -> None:
+        """Add an episode to the buffer."""
+
+        self.dataset.add_episode(episode)
+
     def sample(self) -> Dict[str, torch.Tensor]:
         batch_dict = next(self.iterator)
 
